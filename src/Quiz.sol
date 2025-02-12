@@ -25,13 +25,17 @@ contract Quiz{
         addQuiz(q);
     }
 
+    modifier quizExists(uint quizId) {
+        require(quizItems[quizId].id != 0, "Quiz with this ID not exists.");
+        _;
+    }
+
     function addQuiz(Quiz_item memory q) public {
         require(quizItems[q.id].id == 0, "Quiz with this ID already exists.");
         quizItems[q.id] = q;
     }
 
-    function getAnswer(uint quizId) public view returns (string memory){
-        require(quizItems[quizId].id != 0, "Quiz with this ID not exists.");
+    function getAnswer(uint quizId) public view quizExists(quizId) returns (string memory){
         return quizItems[quizId].answer;
     }
 
