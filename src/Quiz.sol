@@ -60,9 +60,13 @@ contract Quiz{
         bets[quizId-1][msg.sender] += msg.value;
     }
 
-    function solveQuiz(uint quizId, string memory ans) public view quizExists(quizId) returns (bool) {
+    function solveQuiz(uint quizId, string memory ans) public quizExists(quizId) returns (bool) {
         require(bets[quizId-1][msg.sender] > 0, "Bet first.");
-        return keccak256(abi.encode(quizItems[quizId].answer)) == keccak256(abi.encode(ans));
+        if (keccak256(abi.encode(quizItems[quizId].answer)) == keccak256(abi.encode(ans))) {
+            currentQuizNum += 1;
+            return true;
+        }
+        return false;
     }
 
     function claim() public {
