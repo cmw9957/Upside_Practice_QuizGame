@@ -31,6 +31,8 @@ contract Quiz{
     }
 
     function getAnswer(uint quizId) public view returns (string memory){
+        require(quizItems[quizId].id != 0, "Quiz with this ID not exists.");
+        return quizItems[quizId].answer;
     }
 
     function getQuiz(uint quizId) public view returns (Quiz_item memory) {
