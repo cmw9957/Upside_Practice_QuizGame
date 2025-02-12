@@ -63,14 +63,19 @@ contract Quiz{
 
     function solveQuiz(uint quizId, string memory ans) public quizExists(quizId) returns (bool) {
         require(bets[quizId-1][msg.sender] > 0, "Bet first.");
+        address sender = msg.sender;
         if (keccak256(abi.encode(quizItems[quizId].answer)) == keccak256(abi.encode(ans))) {
-            round[msg.sender] += 1;
+            round[sender] += 1;
             return true;
+        } else {
+            vault_balance += bets[quizId-1][sender];
+            bets[quizId-1][sender] = 0;
+            return false;
         }
-        return false;
     }
 
     function claim() public {
+
     }
 
 }
