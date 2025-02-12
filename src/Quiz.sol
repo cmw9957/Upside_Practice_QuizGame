@@ -75,7 +75,12 @@ contract Quiz{
     }
 
     function claim() public {
+        address recipient = msg.sender;
+        uint256 reward = bets[round[recipient]-1][recipient];
 
+        require(reward * 2 <= vault_balance, "Vault balance is not enough...");
+        
+        payable(recipient).transfer(reward * 2);
     }
 
 }
