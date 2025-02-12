@@ -15,7 +15,7 @@ contract Quiz{
     mapping(address => uint256)[] public bets;
     uint public vault_balance;
 
-    uint currentQuizNum = 1;
+    mapping(address => uint) public round;
 
     constructor () {
         Quiz_item memory q;
@@ -25,6 +25,7 @@ contract Quiz{
         q.min_bet = 1 ether;
         q.max_bet = 2 ether;
         addQuiz(q);
+        round[msg.sender] = 1;
     }
 
     modifier quizExists(uint quizId) {
@@ -53,7 +54,7 @@ contract Quiz{
     }
 
     function getQuizNum() public view returns (uint){
-        return currentQuizNum;
+        return round[msg.sender];
     }
     
     function betToPlay(uint quizId) public payable quizExists(quizId) validBetAmount(quizId){
@@ -63,7 +64,7 @@ contract Quiz{
     function solveQuiz(uint quizId, string memory ans) public quizExists(quizId) returns (bool) {
         require(bets[quizId-1][msg.sender] > 0, "Bet first.");
         if (keccak256(abi.encode(quizItems[quizId].answer)) == keccak256(abi.encode(ans))) {
-            currentQuizNum += 1;
+            round[msg.sender] += 1;
             return true;
         }
         return false;
