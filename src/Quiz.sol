@@ -39,7 +39,8 @@ contract Quiz{
         return quizItems[quizId].answer;
     }
 
-    function getQuiz(uint quizId) public view returns (Quiz_item memory) {
+    function getQuiz(uint quizId) public view quizExists(quizId) returns (Quiz_item memory) {
+        return quizItems[quizId];
     }
 
     function getQuizNum() public view returns (uint){
