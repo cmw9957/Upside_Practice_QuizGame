@@ -15,6 +15,8 @@ contract Quiz{
     mapping(address => uint256)[] public bets;
     uint public vault_balance;
 
+    uint currentQuizNum = 1;
+
     constructor () {
         Quiz_item memory q;
         q.id = 1;
@@ -44,6 +46,7 @@ contract Quiz{
     }
 
     function getQuizNum() public view returns (uint){
+        return currentQuizNum;
     }
     
     function betToPlay(uint quizId) public payable {
