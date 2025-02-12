@@ -10,6 +10,8 @@ contract Quiz{
       uint max_bet;
     }
 
+    address public owner;
+
     mapping(uint => Quiz_item) public quizItems;
 
     mapping(address => uint256)[] public bets;
@@ -24,6 +26,7 @@ contract Quiz{
         q.answer = "2";
         q.min_bet = 1 ether;
         q.max_bet = 2 ether;
+        owner = msg.sender;
         addQuiz(q);
         round[msg.sender] = 1;
     }
@@ -41,6 +44,7 @@ contract Quiz{
     function addQuiz(Quiz_item memory q) public {
         require(quizItems[q.id].id == 0, "Quiz with this ID already exists.");
         require(q.id > 0, "Invalid Quiz id.");
+        require(msg.sender == owner, "You're not admin.");
         quizItems[q.id] = q;
         bets.push();
     }
@@ -82,5 +86,7 @@ contract Quiz{
         
         payable(recipient).transfer(reward * 2);
     }
+
+    receive() external payable {}
 
 }
