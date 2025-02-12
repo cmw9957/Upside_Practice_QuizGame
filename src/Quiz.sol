@@ -8,8 +8,10 @@ contract Quiz{
       string answer;
       uint min_bet;
       uint max_bet;
-   }
-    
+    }
+
+    mapping(uint => Quiz_item) public quizItems;
+
     mapping(address => uint256)[] public bets;
     uint public vault_balance;
 
@@ -24,6 +26,8 @@ contract Quiz{
     }
 
     function addQuiz(Quiz_item memory q) public {
+        require(quizItems[q.id].id == 0, "Quiz with this ID already exists.");
+        quizItems[q.id] = q;
     }
 
     function getAnswer(uint quizId) public view returns (string memory){
