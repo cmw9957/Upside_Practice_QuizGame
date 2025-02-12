@@ -32,9 +32,15 @@ contract Quiz{
         _;
     }
 
+    modifier validBetAmount(uint quizId) {
+        require(msg.value >= quizItems[quizId].min_bet && msg.value <= quizItems[quizId].max_bet, "Invalid bet amount.");
+        _;
+    }
+
     function addQuiz(Quiz_item memory q) public {
         require(quizItems[q.id].id == 0, "Quiz with this ID already exists.");
         quizItems[q.id] = q;
+        bets.push();
     }
 
     function getAnswer(uint quizId) public view quizExists(quizId) returns (string memory){
@@ -49,7 +55,8 @@ contract Quiz{
         return currentQuizNum;
     }
     
-    function betToPlay(uint quizId) public payable {
+    function betToPlay(uint quizId) public payable quizExists(quizId) validBetAmount(quizId){
+        bets[quizId-1][msg.sender] += msg.value;
     }
 
     function solveQuiz(uint quizId, string memory ans) public returns (bool) {
