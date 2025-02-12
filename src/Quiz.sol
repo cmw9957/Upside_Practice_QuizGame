@@ -39,6 +39,7 @@ contract Quiz{
 
     function addQuiz(Quiz_item memory q) public {
         require(quizItems[q.id].id == 0, "Quiz with this ID already exists.");
+        require(q.id > 0, "Invalid Quiz id.");
         quizItems[q.id] = q;
         bets.push();
     }
