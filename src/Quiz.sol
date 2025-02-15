@@ -19,9 +19,9 @@ contract Quiz{
 
     mapping(address => uint) public round;
 
-    mapping(uint => string) public answer;
+    mapping(uint => string) private answer;
 
-    mapping(address => mapping(uint => bool)) complete;
+    mapping(address => mapping(uint => bool)) public complete;
 
     constructor () {
         Quiz_item memory q;
@@ -48,7 +48,6 @@ contract Quiz{
 
     function addQuiz(Quiz_item memory q) public {
         require(quizItems[q.id].id == 0, "Quiz with this ID already exists.");
-        require(q.id > 0, "Invalid Quiz id.");
         require(msg.sender == owner, "You're not admin.");
         answer[q.id] = q.answer;
         q.answer = "";
