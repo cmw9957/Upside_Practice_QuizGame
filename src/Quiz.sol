@@ -97,8 +97,8 @@ contract Quiz{
 
         require(reward * 2 <= vault_balance, "Vault balance is not enough...");
         
-        payable(recipient).transfer(reward * 2);
         vault_balance -= reward * 2;
+        payable(recipient).transfer(reward * 2);
     }
 
     receive() external payable {
