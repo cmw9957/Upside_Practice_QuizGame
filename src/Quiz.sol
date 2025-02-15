@@ -17,7 +17,7 @@ contract Quiz{
     mapping(address => uint256)[] public bets;
     mapping(address => uint) public round;
     mapping(uint => bytes32) private answer;
-    mapping(address => mapping(uint => bool)) public complete;
+    mapping(address => mapping(uint => bool)) public quizComplete;
 
     constructor () {
         Quiz_item memory q;
@@ -80,7 +80,7 @@ contract Quiz{
         address sender = msg.sender;
         if (answer[quizId] == ans) {
             round[sender] += 1;
-            complete[sender][quizId] = true;
+            quizComplete[sender][quizId] = true;
             return true;
         } else {
             vault_balance += bets[quizId-1][sender];
@@ -91,17 +91,17 @@ contract Quiz{
 
     function claim() public {
         uint256 reward = 0;
-        address recipient = msg.sender;
-        for (uint i = 1;i <= bets.length;i++) {
-            if (complete[recipient][i]) {
-                reward += bets[i-1][recipient];
+        uint256 betsLength = bets.length;
+        for (uint i = 0;i < betsLength;i++) {
+            if (quizComplete[msg.sender][i+1]) {
+                reward += bets[i][msg.sender];
             }
         }
 
         require(reward * 2 <= vault_balance, "Vault balance is not enough...");
         
         vault_balance -= reward * 2;
-        payable(recipient).transfer(reward * 2);
+        payable(msg.sender).transfer(reward * 2);
     }
 
     receive() external payable {
