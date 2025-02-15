@@ -11,16 +11,12 @@ contract Quiz{
     }
 
     address public owner;
-
-    mapping(uint => Quiz_item) public quizItems;
-
-    mapping(address => uint256)[] public bets;
     uint public vault_balance;
 
+    mapping(uint => Quiz_item) public quizItems;
+    mapping(address => uint256)[] public bets;
     mapping(address => uint) public round;
-
-    mapping(uint => string) private answer;
-
+    mapping(uint => bytes32) private answer;
     mapping(address => mapping(uint => bool)) public complete;
 
     constructor () {
@@ -36,6 +32,11 @@ contract Quiz{
         addQuiz(q);
     }
 
+    modifier onlyOwner() {
+        require(msg.sender == owner, "You're not owner.");
+        _;
+    }
+
     modifier quizExists(uint quizId) {
         require(quizItems[quizId].id != 0, "Quiz with this ID not exists.");
         _;
@@ -46,16 +47,19 @@ contract Quiz{
         _;
     }
 
-    function addQuiz(Quiz_item memory q) public {
-        require(quizItems[q.id].id == 0, "Quiz with this ID already exists.");
-        require(msg.sender == owner, "You're not admin.");
-        answer[q.id] = q.answer;
+    modifier checkQuizId(uint quizId) {
+        require(quizId == 0, "Quiz with this ID already exists or must be greater than 0.");
+        _;
+    }
+
+    function addQuiz(Quiz_item memory q) public onlyOwner() checkQuizId(quizItems[q.id].id) {
+        answer[q.id] = keccak256(abi.encode(q.answer));
         q.answer = "";
         quizItems[q.id] = q;
         bets.push();
     }
 
-    function getAnswer(uint quizId) public view quizExists(quizId) returns (string memory){
+    function getAnswer(uint quizId) public view quizExists(quizId) returns (bytes32){
         return answer[quizId];
     }
 
@@ -71,10 +75,10 @@ contract Quiz{
         bets[quizId-1][msg.sender] += msg.value;
     }
 
-    function solveQuiz(uint quizId, string memory ans) public quizExists(quizId) returns (bool) {
+    function solveQuiz(uint quizId, bytes32 ans) public quizExists(quizId) returns (bool) {
         require(bets[quizId-1][msg.sender] > 0, "Bet first.");
         address sender = msg.sender;
-        if (keccak256(abi.encode(answer[quizId])) == keccak256(abi.encode(ans))) {
+        if (answer[quizId] == ans) {
             round[sender] += 1;
             complete[sender][quizId] = true;
             return true;
