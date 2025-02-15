@@ -108,6 +108,7 @@ contract Quiz{
         for (uint i = 0;i < betsLength;i++) {
             if (quizComplete[msg.sender][i+1]) {
                 reward += bets[i][msg.sender];
+                quizComplete[msg.sender][i+1] = false; // 이후 claim에서 중복 지급을 예방
             }
         }
 
